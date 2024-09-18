@@ -5,6 +5,7 @@ from crud import create_note, get_notes, get_note_by_id, search_notes_by_tag
 from pydantic import BaseModel
 from typing import List
 import uvicorn
+import bot
 
 app = FastAPI()
 
@@ -54,4 +55,4 @@ def search_notes(tag_name: str, db: Session = Depends(get_db)):
     return notes
 
 if __name__=="__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5432)
+          uvicorn.run(app, host="0.0.0.0", port=5432)
