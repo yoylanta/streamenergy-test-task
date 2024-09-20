@@ -41,7 +41,6 @@ def read_notes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
         note.created_at = note.created_at.strftime("%Y-%m-%d %H:%M:%S")
         note.updated_at = note.updated_at.strftime("%Y-%m-%d %H:%M:%S")
     return notes
-    #return get_notes(db, skip=skip, limit=limit)
 
 @app.get("/notes/{note_id}", response_model=NoteOut)
 def read_note(note_id: int, db: Session = Depends(get_db)):
@@ -66,10 +65,14 @@ async def start_fastapi():
     await server.serve()
 
 async def run_services():
-    bot_task = asyncio.create_task(start_bot())  # Run bot
-    fastapi_task = asyncio.create_task(start_fastapi())  # Run FastAPI app
+     # Start FastAPI using uvicorn's Config and Server in an asynchronous way
+    config = uvicorn.Config("main:app", host="0.0.0.0", port=8080, log_level="info")
+    server = uvicorn.Server(config)
+    
+    bot_task = asyncio.create_task(start_bot())  # Start the bot
+    fastapi_task = asyncio.create_task(server.serve())  # Start FastAPI
 
     await asyncio.gather(bot_task, fastapi_task)  # Run both concurrently
 
 if __name__=="__main__":
-          asyncio.run(run_services())
+    asyncio.run(run_services())
